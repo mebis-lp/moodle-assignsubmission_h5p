@@ -107,6 +107,7 @@ class assign_submission_h5p extends assign_submission_plugin {
 
         $this->h5peditor = new h5peditor();
 
+        // Todo: Check whether storing userid has an effect on team submissions.
         $this->h5peditor->set_library(
             array_key_first($choices),
             $this->assignment->get_context()->id,
@@ -217,7 +218,7 @@ class assign_submission_h5p extends assign_submission_plugin {
      * @return string
      */
     public function view(stdClass $submission) {
-        global $DB;
+        global $DB, $OUTPUT;
         $currentsubmission = $DB->get_record('assignsubmission_h5p', ['submission' => $submission->id]);
         $fs = get_file_storage();
         $pathnamehash = $DB->get_field('h5p', 'pathnamehash', ['id' => $currentsubmission->h5pid]);
@@ -231,8 +232,12 @@ class assign_submission_h5p extends assign_submission_plugin {
             $file->get_filename()
         );
         $config = new stdClass();
-        $player = new h5pplayer($url, $config, true, '', true);
-        return $player->display($url, $config, true, '', true);
+        $player = new h5pplayer($url, $config, true, 'assignsubmission_h5p', true);
+        
+        return $OUTPUT->render_from_template(
+            'assignsubmission_h5p/h5pview',
+            ['content' => $player->display($url, $config, true, 'assignsubmission_h5p', true)]
+        );
     }
 
     /**

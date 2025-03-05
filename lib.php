@@ -38,7 +38,9 @@
 function assignsubmission_h5p_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
     require_login();
 
-    require_capability('mod/assign:grade', $context);
+    if (!has_capability('mod/assign:grade', $context)) {
+        
+    }
 
     // Todo: View own submission.
 
@@ -49,9 +51,6 @@ function assignsubmission_h5p_pluginfile($course, $cm, $context, $filearea, $arg
     if (!$file = $fs->get_file_by_hash(sha1($fullpath)) || !$file->is_readable()) {
         send_file_not_found();
     }
-
-    $filename = $file->get_filename();
-    $mimetype = $file->get_mimetype();
 
     send_stored_file($file, 0, 0, $forcedownload, $options);
 }
