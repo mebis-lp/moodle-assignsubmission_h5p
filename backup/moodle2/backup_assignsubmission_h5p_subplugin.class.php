@@ -17,13 +17,12 @@
 /**
  * Provides the information to backup H5P Submission submissions
  *
- * @package assignsubmission_h5p
+ * @package    assignsubmission_h5p
  * @copyright  2025 ISB Bayern
- * @author      Stefan Hanauska <stefan.hanauska@csg-in.de>
+ * @author     Stefan Hanauska <stefan.hanauska@csg-in.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_assignsubmission_h5p_subplugin extends backup_subplugin {
-
     /**
      * Returns the subplugin information to attach to submission element
      *
@@ -35,7 +34,6 @@ class backup_assignsubmission_h5p_subplugin extends backup_subplugin {
         $subplugin = $this->get_subplugin_element();
         $subpluginwrapper = new backup_nested_element($this->get_recommended_name());
 
-        // TODO: make sure the names of the elements are correct, "value" is just an example of a field name.
         $subpluginelement = new backup_nested_element('submission_h5p', null, ['value', 'submission']);
 
         // Connect XML elements into the tree.

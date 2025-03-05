@@ -39,10 +39,13 @@ function assignsubmission_h5p_pluginfile($course, $cm, $context, $filearea, $arg
     require_login();
 
     if (!has_capability('mod/assign:grade', $context)) {
-        
+        require_once($CFG->dirroot . '/mod/assign/locallib.php');
+        $assign = new assign($context, $cm, $course);
+        require_capability('mod/assign:view', $context);
+        if (!$assign->can_view_submission($USER->id)) {
+            send_file_not_found();
+        }
     }
-
-    // Todo: View own submission.
 
     $fs = get_file_storage();
     $relativepath = implode('/', $args);

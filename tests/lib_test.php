@@ -26,7 +26,6 @@ namespace assignsubmission_h5p;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class lib_test extends \advanced_testcase {
-
     /**
      * Example of a unittest
      *

@@ -233,7 +233,7 @@ class assign_submission_h5p extends assign_submission_plugin {
         );
         $config = new stdClass();
         $player = new h5pplayer($url, $config, true, 'assignsubmission_h5p', true);
-        
+
         return $OUTPUT->render_from_template(
             'assignsubmission_h5p/h5pview',
             ['content' => $player->display($url, $config, true, 'assignsubmission_h5p', true)]

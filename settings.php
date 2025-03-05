@@ -26,6 +26,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 /** @var admin_settingpage $settings */
-$settings->add(new admin_setting_configcheckbox('assignsubmission_h5p/default',
-                   new lang_string('default', 'assignsubmission_h5p'),
-                   new lang_string('default_help', 'assignsubmission_h5p'), 0));
+$settings->add(new admin_setting_configcheckbox(
+    'assignsubmission_h5p/default',
+    new lang_string('default', 'assignsubmission_h5p'),
+    new lang_string('default_help', 'assignsubmission_h5p'),
+    0
+));
