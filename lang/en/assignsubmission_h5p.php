@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['allowedtypes'] = 'Allowed content types';
+$string['allowedtypes_help'] = 'Students can only choose from the content types in this list. You can select multiple types, at least one.';
 $string['default'] = 'Enabled by default';
 $string['default_help'] = 'If set, this submission method will be enabled by default for all new assignments.';
 $string['enabled'] = 'H5P Submission';
@@ -33,3 +35,5 @@ $string['enabled_help'] = 'If enabled, students are able to create a H5P activit
 $string['library'] = 'Library';
 $string['pluginname'] = 'H5P Submission';
 $string['privacy:metadata'] = 'The H5P Submission plugin doesn\'t store any personal data.';
+$string['restricttypes'] = 'Restrict usable content types';
+$string['settings'] = 'H5P submission settings';

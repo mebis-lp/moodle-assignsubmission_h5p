@@ -81,6 +81,28 @@ class assign_submission_h5p extends assign_submission_plugin {
     }
 
     /**
+     * Get the list of libraries that are allowed
+     *
+     * @return array
+     */
+    public function get_filtered_libraries(): array {
+        $choices = $this->get_libraries();
+        $restricttypesconfig = $this->get_config('restricttypes');
+        $restricttypes =!empty($restricttypesconfig);
+        if (!$restricttypes) {
+            return $choices;
+        }
+        $allowedtypesconfig = $this->get_config('allowedtypes');
+        $allowedtypes = explode(',', $allowedtypesconfig);
+        foreach ($choices as $key => $choice) {
+            if (!in_array($key, $allowedtypes)) {
+                unset($choices[$key]);
+            }
+        }
+        return $choices;
+    }
+
+    /**
      * Add form elements for settings
      *
      * @param null|stdClass $submission record from assign_submission table or null if it is a new submission
@@ -96,7 +118,7 @@ class assign_submission_h5p extends assign_submission_plugin {
         $mform->addElement('hidden', 'h5pid');
         $mform->setType('h5pid', PARAM_INT);
 
-        $choices = $this->get_libraries();
+        $choices = $this->get_filtered_libraries();
         $mform->addElement(
             'select',
             'library',
@@ -107,18 +129,6 @@ class assign_submission_h5p extends assign_submission_plugin {
 
         $this->h5peditor = new h5peditor();
 
-        // Todo: Check whether storing userid has an effect on team submissions.
-        $this->h5peditor->set_library(
-            array_key_first($choices),
-            $this->assignment->get_context()->id,
-            'assignsubmission_h5p',
-            'submissions',
-            $data->userid,
-            '/',
-            'submission.h5p',
-            $data->userid
-        );
-
         if ($submission) {
             $currentsubmission = $DB->get_record('assignsubmission_h5p', ['submission' => $submission->id]);
             $data->h5pid = $currentsubmission ? $currentsubmission->h5pid : '';
@@ -128,7 +138,19 @@ class assign_submission_h5p extends assign_submission_plugin {
             $pathnamehash = $DB->get_field('h5p', 'pathnamehash', ['id' => $data->h5pid]);
             $data->oldfile = $fs->get_file_by_hash($pathnamehash);
             $this->h5peditor->set_content($data->h5pid);
-        }
+        } else {
+            // Todo: Check whether storing userid has an effect on team submissions.
+            $this->h5peditor->set_library(
+                array_key_first($choices),
+                $this->assignment->get_context()->id,
+                'assignsubmission_h5p',
+                'submissions',
+                $data->userid,
+                '/',
+                'submission.h5p',
+                $data->userid
+            );
+        }        
 
         $this->h5peditor->add_editor_to_form($mform);
 
@@ -269,5 +291,46 @@ class assign_submission_h5p extends assign_submission_plugin {
         require_once($CFG->dirroot . '/lib/externallib.php');
 
         return ['h5p' => new external_value(PARAM_RAW, 'The value for this submission.')];
+    }
+
+    /**
+     * Add the settings
+     *
+     * @param MoodleQuickForm $mform
+     * @return void
+     */
+    public function get_settings(MoodleQuickForm $mform) {
+        $mform->addElement(
+            'advcheckbox',
+            'assignsubmission_h5p_restricttypes',
+            get_string('restricttypes', 'assignsubmission_h5p')
+        );
+        $mform->setType('assignsubmission_h5p_restricttypes', PARAM_BOOL);
+
+        $mform->addElement(
+            'select',
+            'assignsubmission_h5p_allowedtypes',
+            get_string('allowedtypes', 'assignsubmission_h5p'),
+            $this->get_libraries(),
+            ['multiple' => true]
+        );
+        $mform->setType('assignsubmission_h5p_allowedtypes', PARAM_TEXT);
+        $mform->addHelpButton('assignsubmission_h5p_allowedtypes', 'allowedtypes', 'assignsubmission_h5p');
+        $mform->disabledIf('assignsubmission_h5p_allowedtypes', 'assignsubmission_h5p_restricttypes', 'notchecked');
+
+        $mform->hideIf('assignsubmission_h5p_restricttypes', 'assignsubmission_h5p_enabled', 'notchecked');
+        $mform->hideIf('assignsubmission_h5p_allowedtypes', 'assignsubmission_h5p_enabled', 'notchecked');
+    }
+
+    /**
+     * Save the settings
+     *
+     * @param stdClass $formdata
+     * @return bool
+     */
+    public function save_settings(stdClass $formdata) {
+        $this->set_config('restricttypes', !empty($formdata->assignsubmission_h5p_restricttypes));
+        $this->set_config('allowedtypes', implode(',', $formdata->assignsubmission_h5p_allowedtypes));
+        return true;
     }
 }
